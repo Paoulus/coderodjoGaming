@@ -12,7 +12,7 @@ var layer;
 
 function preload()
 {
-    game.load.tilemap('mappa','tilemap600x20.json',null,Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('mappa','mappa-esportata.json',null,Phaser.Tilemap.TILED_JSON);
     game.load.image('tileset','tiles-1.png');
 
     game.load.atlas('robot','atlas_robot_basicPackaging.png','atlas_robot_basicPackaging.json');
@@ -21,12 +21,12 @@ function preload()
 var robot;
 function create()
 {
-    /*
+    
     map = game.add.tilemap("mappa");
     map.addTilesetImage("tileset");
     layer = map.createLayer("Livello tile 1");
     layer.resizeWorld();
-    */
+    
 
     robot = game.add.sprite(50,50,'robot','Idle (2).png');
     game.physics.enable(robot,Phaser.Physics.ARCADE,true);
@@ -36,17 +36,18 @@ function create()
     robot.animations.add('still',['Idle (1).png'],1,false,false);
 }
 
-var robotVelociy = 150;
-function update(){
+var robotVelocity = 150;
+function update()
+{
     if(game.input.keyboard.isDown(Phaser.Keyboard.D))
     {
-        robot.body.velocity.setTo(robotVelociy,0);
+        robot.body.velocity.setTo(robotVelocity,0);
         robot.animations.play('run');
         robot.scale.setTo(1,1);
     }
     else if(game.input.keyboard.isDown(Phaser.Keyboard.A))
     {
-        robot.body.velocity.setTo(-robotVelociy,0);
+        robot.body.velocity.setTo(-robotVelocity,0);
         robot.animations.play('run');
         robot.scale.setTo(-1,1);
     }
