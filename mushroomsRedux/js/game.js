@@ -13,7 +13,7 @@ var mapLayer;
 function preload()
 {
     game.load.tilemap('mappa','mappa-esportata.json',null,Phaser.Tilemap.TILED_JSON);
-    game.load.image('tileset','tiles-1.png');
+    game.load.image('tiles-1','tiles-1.png');
 
     game.load.atlas('robot','atlas_robot_basicPackaging.png','atlas_robot_basicPackaging.json');
 }
@@ -25,19 +25,19 @@ function create()
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	
     //impostazione gravità locale
-	game.physics.arcade.gravity.y = 2984;
+	game.physics.arcade.gravity.y = 184;
 	
 	//impostazione mappa
     map = game.add.tilemap("mappa");
-    map.addTilesetImage("tileset");
+    map.addTilesetImage("tiles-1");
     mapLayer = map.createLayer("Livello tile 1");
     mapLayer.resizeWorld();
 	
-	map.setCollisionBetween(0,50);
+	map.setCollisionBetween(0,10);
     
 	//impostazione proprietà robot
     robot = game.add.sprite(50,50,'robot','Idle (2).png');
-	robot.scale.setTo(0.27,0.27);
+	robot.scale.setTo(0.37,0.37);
     game.physics.enable(robot,Phaser.Physics.ARCADE,true);
     robot.anchor.setTo(0.5,0.5);
 	robot.body.colliderWorldBounds = true;
@@ -54,18 +54,20 @@ function update()
 	
     if(game.input.keyboard.isDown(Phaser.Keyboard.D))
     {
-        robot.body.velocity.setTo(robotVelocity,0);
+        robot.body.velocity.x = robotVelocity;
         robot.animations.play('run');
-        robot.scale.setTo(0.27,0.27);
+        robot.scale.setTo(0.37,0.37);
     }
     else if(game.input.keyboard.isDown(Phaser.Keyboard.A))
     {
-        robot.body.velocity.setTo(-robotVelocity,0);
+        robot.body.velocity.x = -robotVelocity;
         robot.animations.play('run');
-        robot.scale.setTo(-0.27,0.27);
+        robot.scale.setTo(-0.37,0.37);
     }
     else{
-        robot.body.velocity.setTo(0,0);
+		//non azzerare la velocità ad ogni frame, altrimenti la gravità non funziona correttamente
+        //robot.body.velocity.setTo(0,0);
+		robot.body.velocity.x = 0;
         robot.animations.stop('run',true);
         robot.animations.play('still');
     }
