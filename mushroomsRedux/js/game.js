@@ -33,11 +33,12 @@ function create()
     mapLayer = map.createLayer("Livello tile 1");
     mapLayer.resizeWorld();
 	
-	map.setCollisionBetween(0,10);
+    //include ALL the tiles
+	map.setCollisionBetween(0,67);
     
 	//impostazione proprietà robot
     robot = game.add.sprite(50,50,'robot','Idle (2).png');
-	robot.scale.setTo(0.37,0.37);
+	robot.scale.setTo(0.3,0.3);
     game.physics.enable(robot,Phaser.Physics.ARCADE,true);
     robot.anchor.setTo(0.5,0.5);
 	robot.body.colliderWorldBounds = true;
@@ -48,21 +49,32 @@ function create()
 }
 
 var robotVelocity = 150;
+var jumpTime = 0;
 function update()
 {
 	game.physics.arcade.collide(robot,mapLayer);
 	
+
+    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+    {
+        if(robot.body.onFloor() && game.time.now - jumpTime > 90)
+        {
+            robot.body.velocity.y = -120;
+            jumpTime = game.time.now;    
+        }
+    }
+
     if(game.input.keyboard.isDown(Phaser.Keyboard.D))
     {
         robot.body.velocity.x = robotVelocity;
         robot.animations.play('run');
-        robot.scale.setTo(0.37,0.37);
+        robot.scale.setTo(0.3,0.3);
     }
     else if(game.input.keyboard.isDown(Phaser.Keyboard.A))
     {
         robot.body.velocity.x = -robotVelocity;
         robot.animations.play('run');
-        robot.scale.setTo(-0.37,0.37);
+        robot.scale.setTo(-0.3,0.3);
     }
     else{
 		//non azzerare la velocità ad ogni frame, altrimenti la gravità non funziona correttamente
