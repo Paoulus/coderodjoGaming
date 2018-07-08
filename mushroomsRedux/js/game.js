@@ -1,60 +1,60 @@
-var game = new Phaser.Game(800,480,Phaser.AUTO,"gameDiv",
+var config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics:{
+        default : "arcade",
+        arcade :{
+            gravity : {y : 150}
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
 
-{
-    preload: preload,
-    create: create,
-    update: update
+var game = new Phaser.Game(config);
 
-});
 var map;
 var mapLayer;
 
 
 function preload()
 {
-    game.load.tilemap('mappa','tilemap600x20.json',null,Phaser.Tilemap.TILED_JSON);
-    game.load.image('tiles-1','tiles-1.png');
+    this.load.tilemapTiledJSON('mappa','assets/maps/tilemap600x20.json');
+    this.load.image('tiles-1','assets/tilemaps/tiles-1.png');
 
-    game.load.spritesheet('flag','flag.png');
-    game.load.spritesheet('slime','slime.png');
+    this.load.spritesheet('flag','assets/sprites/flag.png', { frameWidth: 37, frameHeight: 45 });
+    this.load.spritesheet('slime','assets/sprites/slime.png', { frameWidth: 37, frameHeight: 45 });
 
-    game.load.atlas('robot','atlas_robot_basicPackaging.png','atlas_robot_basicPackaging.json');
+    this.load.atlas('robot','assets/sprites/atlas_robot_basicPackaging.png','assets/sprites/atlas_robot_basicPackaging.json');
 }
 
 var robot;
 var checkpoints;
 var enemies;
 function create()
-{
-	//attiva fisica 
-	game.physics.startSystem(Phaser.Physics.ARCADE);
-	
-    //impostazione gravità locale
-	game.physics.arcade.gravity.y = 184;
-	
+{	
 	//impostazione mappa
-    map = game.add.tilemap("mappa");
-    map.addTilesetImage("tiles-1");
-    mapLayer = map.createLayer("Livello tile 1");
-    mapLayer.resizeWorld();
+    map = this.add.tilemap("mappa");
+    var tileset = map.addTilesetImage('tiles-1');
+    mapLayer = map.createStaticLayer("Livello tile 1",tileset);
 	
     //include ALL the tiles
 	map.setCollisionBetween(0,67);
     
 	//impostazione proprietà robot
-    robot = game.add.sprite(50,50,'robot','Idle (2).png');
-	robot.scale.setTo(0.3,0.3);
-    game.physics.enable(robot,Phaser.Physics.ARCADE,true);
-    robot.anchor.setTo(0.5,0.5);
-	robot.body.colliderWorldBounds = true;
-	
-	//animazioni 
-    robot.animations.add('run',['Run (1).png','Run (2).png'],4,true,false);
-    robot.animations.add('still',['Idle (1).png'],1,false,false);
+    robot = this.physics.add.sprite(50,50,'robot','Idle (2).png');
+	robot.scaleX = 0.3; 
+    robot.scaleY = 0.3;
+    robot.anchorX = 0.5;
+    robot.anchorY = 0.5;
 
     //gruppi oggetti
-    flags = game.add.group();
-    enemies = game.add.group();
+    flags = this.add.group();
+    enemies = this.add.group();
 
     flags.enableBody = true;
     enemies.enableBody = true;
@@ -70,54 +70,28 @@ function create()
     //                      nome del gruppo in cui inserire questi oggetti (checkpoints in questo caso)
 
     map.createFromObjects('Enemies',75,'slime',1,true,false,enemies);
-
-    enemies.forEach(function(enemy){
-        enemy.body.immovable = true;
-
-        enemy.animations.add('enemyMovement',[0,1],4,true);
-        enemy.animations.play('enemyMovement');
-        enemy.tween = game.add.tween(enemy).to({x:enemy.x+100},1000,'Linear',true,0,-1,true);
-        enemy.tween.start();
-    },this);
-
-    map.createFromObjects('Checkpoints',75,'checkpoint',true,false,checkpoints);
-
-    flags.forEach(function(checkpoint){
-        checkpoint.body.immovable = true;
-        checkpoint.animations.add('save',[0,1,2,3]);
-        checkpoint.body.allowGravity = false;
-
-        checkpoint.used = false;
-
-    },this);
-
-    game.physics.enable(checkpoints,Phaser.Physics.ARCADE);
-    game.physics.enable(enemies,Phaser.Phaser.ARCADE);
 }
 
 var robotVelocity = 150;
 var jumpTime = 0;
 function update()
 {
-	game.physics.arcade.collide(robot,mapLayer);
-	
-
-    if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+    if((Phaser.Input.Keyboard.KeyCodes.SPACEBAR))
     {
-        if(robot.body.onFloor() && game.time.now - jumpTime > 90)
+        if(robot.body.onFloor() && this.time.now - jumpTime > 90)
         {
             robot.body.velocity.y = -120;
-            jumpTime = game.time.now;    
+            jumpTime = this.time.now;    
         }
     }
 
-    if(game.input.keyboard.isDown(Phaser.Keyboard.D))
+    if((Phaser.Input.Keyboard.KeyCodes.D))
     {
         robot.body.velocity.x = robotVelocity;
         robot.animations.play('run');
         robot.scale.setTo(0.3,0.3);
     }
-    else if(game.input.keyboard.isDown(Phaser.Keyboard.A))
+    else if((Phaser.Input.Keyboard.KeyCodes.A))
     {
         robot.body.velocity.x = -robotVelocity;
         robot.animations.play('run');
@@ -130,13 +104,6 @@ function update()
         robot.animations.stop('run',true);
         robot.animations.play('still');
     }
-
-    //collisione nemico
-    game.physics.arcade.collide(enemies,mapLayer);
-    game.physics.arcade.overlap(robot,enemies,killPlayer,null,this);   //controllare firma metodo
-
-    //collisione bandierina
-    game.physics.arcade.overlap(robot,checkpoints,savePosition,null,this);
 }
 
 function savePosition(player,checkpoint)
