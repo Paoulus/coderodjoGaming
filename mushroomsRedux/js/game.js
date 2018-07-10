@@ -52,6 +52,16 @@ function create()
     robot.anchorX = 0.5;
     robot.anchorY = 0.5;
 
+    this.anims.create({
+        key: "run",
+        frames: this.anims.generateFrameNames('robot',{prefix:'Run (',start:1,end:8,suffix:').png'}),
+        repeat: -1
+    });
+    this.anims.create({
+        key: "flagUp",
+        frames: this.anims.generateFrameNumbers('flag', { start: 0, end: 4, first: 0 })
+    });
+
     //gruppi oggetti
     flags = this.add.group();
     enemies = this.add.group();
@@ -88,21 +98,22 @@ function update()
     if((Phaser.Input.Keyboard.KeyCodes.D))
     {
         robot.body.velocity.x = robotVelocity;
-        robot.animations.play('run');
-        robot.scale.setTo(0.3,0.3);
+        robot.play('run');
+        robot.scaleX = 0.3;
+        robot.scaleY = 0.3;
     }
     else if((Phaser.Input.Keyboard.KeyCodes.A))
     {
         robot.body.velocity.x = -robotVelocity;
-        robot.animations.play('run');
-        robot.scale.setTo(-0.3,0.3);
+        robot.play('run');
+        robot.scaleX = -0.3
     }
     else{
 		//non azzerare la velocità ad ogni frame, altrimenti la gravità non funziona correttamente
         //robot.body.velocity.setTo(0,0);
 		robot.body.velocity.x = 0;
-        robot.animations.stop('run',true);
-        robot.animations.play('still');
+        robot.stop('run',true);
+        robot.play('still');
     }
 }
 
@@ -110,7 +121,7 @@ function savePosition(player,checkpoint)
 {
     if(! checkpoint.isUsed)
     {
-        checkpoint.animations.play('save');
+        checkpoint.play('save');
         //per evitare di riprodurre continuamente la stessa animazione
         checkpoint.used = true;
     }
