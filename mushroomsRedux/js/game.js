@@ -75,7 +75,7 @@ function create()
     });
     this.anims.create({
         key: "jump",
-        frames: this.anims.generateFrameNames('robot', { prefix:'Jump (',start:1,end:8,suffix:').png' })
+        frames: this.anims.generateFrameNames('robot', { prefix:'Jump (',start:1,end:10,suffix:').png' })
     });
 
     //gruppi oggetti
@@ -133,7 +133,7 @@ function update()
 		//non azzerare la velocità ad ogni frame, altrimenti la gravità non funziona correttamente
 		robot.body.velocity.x = 0;
 
-        robot.play('still',true);
+        robot.play('still');
     }
 }
 
