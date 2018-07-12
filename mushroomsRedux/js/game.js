@@ -59,7 +59,6 @@ function create()
     robot.scaleY = 0.3;
     robot.anchorX = 0.5;
     robot.anchorY = 0.5;
-    robot.body.setCollideWorldBounds(true);
 
     this.anims.create({
         key: "run",
@@ -99,9 +98,11 @@ function create()
     map.createFromObjects('Enemies',75,'slime',1,true,false,enemies);
 
     this.physics.add.collider(robot, mapCollisionLayer);
+    this.cameras.main.startFollow(robot);
+    this.cameras.main.setBackgroundColor('rgba(10,34,100)');
 }
 
-var robotVelocity = 150;
+var robotVelocity = 330;
 var jumpTime = 0;
 function update()
 {
@@ -109,7 +110,7 @@ function update()
     {
         if(robot.body.onFloor() && this.time.now - jumpTime > 90)
         {
-            robot.body.velocity.y = -120;
+            robot.body.velocity.y = -200;
             jumpTime = this.time.now;
         }
     }
